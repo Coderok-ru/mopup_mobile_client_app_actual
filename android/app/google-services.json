@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675430111158",
+    "project_id": "mopup-client",
+    "storage_bucket": "mopup-client.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675430111158:android:f99207cab95b1e6f5a1317",
+        "android_client_info": {
+          "package_name": "com.coderok.mopup"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClArd6j3dGRNKAPRyl4lq3jC-e88tHi2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
