@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -99,7 +100,7 @@ class NotificationService {
     _executeSetupMessageHandlers();
     firebaseMessaging.onTokenRefresh.listen((String newToken) {
       fcmToken = newToken;
-      print('🔄 FCM Token обновлен: ${newToken.substring(0, 20)}...');
+      print('🔄 FCM Token обновлен: ${newToken.substring(0, newToken.length > 20 ? 20 : newToken.length)}...');
     });
     print('✅ Firebase Messaging настроен');
   }
@@ -126,8 +127,25 @@ class NotificationService {
 
   /// Получает FCM токен.
   Future<void> _executeGetFCMToken() async {
-    fcmToken = await firebaseMessaging.getToken();
-    print('🔑 FCM Token получен: ${fcmToken?.substring(0, 20)}...');
+    try {
+      fcmToken = await firebaseMessaging.getToken();
+      if (fcmToken != null) {
+        print('🔑 FCM Token получен: ${fcmToken!.substring(0, fcmToken!.length > 20 ? 20 : fcmToken!.length)}...');
+      } else {
+        print('⚠️ FCM Token не получен (null)');
+      }
+    } on FirebaseException catch (e) {
+      if (e.code == 'apns-token-not-set') {
+        print('⚠️ APNS токен не установлен (нормально для симулятора iOS)');
+        print('💡 Для получения FCM токена необходимо запустить приложение на реальном устройстве iOS');
+      } else {
+        print('❌ Ошибка при получении FCM токена: ${e.code} - ${e.message}');
+      }
+      fcmToken = null;
+    } catch (e) {
+      print('❌ Неожиданная ошибка при получении FCM токена: $e');
+      fcmToken = null;
+    }
   }
 
   /// Настраивает обработчики сообщений FCM.
