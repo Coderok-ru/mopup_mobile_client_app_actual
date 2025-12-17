@@ -128,6 +128,27 @@ class NotificationService {
   /// Получает FCM токен.
   Future<void> _executeGetFCMToken() async {
     try {
+      // На iOS необходимо сначала получить APNS токен перед получением FCM токена
+      if (Platform.isIOS) {
+        print('🍎 Запрашиваю APNS токен для iOS...');
+        final String? apnsToken = await firebaseMessaging.getAPNSToken();
+        if (apnsToken != null) {
+          print('✅ APNS токен получен: ${apnsToken.substring(0, apnsToken.length > 20 ? 20 : apnsToken.length)}...');
+        } else {
+          print('⚠️ APNS токен не получен (может потребоваться время для регистрации)');
+          // Ждем немного и пробуем еще раз
+          await Future.delayed(const Duration(seconds: 2));
+          final String? apnsTokenRetry = await firebaseMessaging.getAPNSToken();
+          if (apnsTokenRetry == null) {
+            print('⚠️ APNS токен все еще не доступен');
+            print('💡 Убедитесь, что:');
+            print('   1. Устройство подключено к интернету');
+            print('   2. Push Notifications включены в Capabilities проекта');
+            print('   3. Приложение имеет правильный provisioning profile с Push Notifications');
+          }
+        }
+      }
+      
       fcmToken = await firebaseMessaging.getToken();
       if (fcmToken != null) {
         print('🔑 FCM Token получен: ${fcmToken!.substring(0, fcmToken!.length > 20 ? 20 : fcmToken!.length)}...');
@@ -136,8 +157,12 @@ class NotificationService {
       }
     } on FirebaseException catch (e) {
       if (e.code == 'apns-token-not-set') {
-        print('⚠️ APNS токен не установлен (нормально для симулятора iOS)');
-        print('💡 Для получения FCM токена необходимо запустить приложение на реальном устройстве iOS');
+        print('⚠️ APNS токен не установлен');
+        print('💡 Проверьте настройки:');
+        print('   1. В Xcode: Signing & Capabilities → Push Notifications включены');
+        print('   2. App ID в Apple Developer Portal имеет Push Notifications capability');
+        print('   3. Provisioning profile включает Push Notifications');
+        print('   4. Устройство подключено к интернету');
       } else {
         print('❌ Ошибка при получении FCM токена: ${e.code} - ${e.message}');
       }
