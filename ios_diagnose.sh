@@ -138,17 +138,26 @@ echo "6️⃣ Тест выполнения скриптов Flutter..."
 cd "$IOS_DIR"
 
 if [ -f "Flutter/Generated.xcconfig" ]; then
-    source "Flutter/Generated.xcconfig"
+    # Извлекаем FLUTTER_ROOT из .xcconfig файла (без использования source, т.к. файл содержит комментарии //)
+    FLUTTER_ROOT_TEST=$(grep '^FLUTTER_ROOT=' "Flutter/Generated.xcconfig" | cut -d'=' -f2 | tr -d ' ')
     
-    if [ -n "$FLUTTER_ROOT" ] && [ -f "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" ]; then
-        echo "   Тестирую скрипт build..."
-        if /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build 2>&1 | head -5; then
-            echo "   ✅ Скрипт build выполнен успешно"
+    if [ -n "$FLUTTER_ROOT_TEST" ] && [ -f "$FLUTTER_ROOT_TEST/packages/flutter_tools/bin/xcode_backend.sh" ]; then
+        echo "   ✅ FLUTTER_ROOT извлечен: $FLUTTER_ROOT_TEST"
+        echo "   Тестирую скрипт build (только проверка существования)..."
+        if [ -x "$FLUTTER_ROOT_TEST/packages/flutter_tools/bin/xcode_backend.sh" ]; then
+            echo "   ✅ Скрипт xcode_backend.sh существует и исполняемый"
+            echo "   ℹ️  Для полного теста выполните сборку в Xcode"
         else
-            echo "   ❌ Скрипт build завершился с ошибкой"
+            echo "   ⚠️  Скрипт существует, но не исполняемый"
+            echo "   💡 Выполните: chmod +x $FLUTTER_ROOT_TEST/packages/flutter_tools/bin/xcode_backend.sh"
         fi
     else
-        echo "   ⚠️  Не могу протестировать: FLUTTER_ROOT не найден"
+        echo "   ⚠️  Не могу протестировать: FLUTTER_ROOT не найден или скрипт отсутствует"
+        if [ -z "$FLUTTER_ROOT_TEST" ]; then
+            echo "   ❌ FLUTTER_ROOT пустой в Generated.xcconfig"
+        elif [ ! -f "$FLUTTER_ROOT_TEST/packages/flutter_tools/bin/xcode_backend.sh" ]; then
+            echo "   ❌ Скрипт не найден по пути: $FLUTTER_ROOT_TEST/packages/flutter_tools/bin/xcode_backend.sh"
+        fi
     fi
 else
     echo "   ⚠️  Не могу протестировать: Generated.xcconfig не найден"
