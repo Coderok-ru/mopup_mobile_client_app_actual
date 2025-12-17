@@ -294,7 +294,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/Flutter/Generated.xcconfig\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+			shellScript = "set -e\nset -u\nif [ -z \"${FLUTTER_ROOT:-}\" ]; then\n  FLUTTER_ROOT=\"$(grep '^FLUTTER_ROOT=' \"${SRCROOT}/Flutter/Generated.xcconfig\" | cut -d'=' -f2)\"\n  export FLUTTER_ROOT\nfi\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
 		59822B65C5B18E087F53D731 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -349,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nset -u\nsource \"${SRCROOT}/Flutter/Generated.xcconfig\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+			shellScript = "set -e\nset -u\nif [ -z \"${FLUTTER_ROOT:-}\" ]; then\n  FLUTTER_ROOT=\"$(grep '^FLUTTER_ROOT=' \"${SRCROOT}/Flutter/Generated.xcconfig\" | cut -d'=' -f2)\"\n  export FLUTTER_ROOT\nfi\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		EDD483F666471191C9C74BB8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
