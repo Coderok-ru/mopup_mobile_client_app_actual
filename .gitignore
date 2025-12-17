@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Keystore files
+*.jks
+*.keystore
+
+# Firebase config files (добавьте свои файлы локально)
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Cursor IDE
+.cursor/
