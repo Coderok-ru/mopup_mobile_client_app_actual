@@ -24,6 +24,8 @@ import '../presentation/views/order_schedule/order_schedule_view.dart';
 import '../presentation/bindings/order_schedule_binding.dart';
 import '../presentation/views/address_picker/address_picker_view.dart';
 import '../presentation/bindings/address_picker_binding.dart';
+import '../presentation/views/address_search/address_search_view.dart';
+import '../presentation/bindings/address_search_binding.dart';
 import '../presentation/views/order_confirmation/order_confirmation_view.dart';
 import '../presentation/bindings/payment_binding.dart';
 import '../presentation/views/payment/add_payment_card_view.dart';
@@ -35,6 +37,7 @@ import '../presentation/bindings/order_details_binding.dart';
 import '../presentation/bindings/info_binding.dart';
 import '../presentation/views/offer/offer_view.dart';
 import '../presentation/bindings/offer_binding.dart';
+import '../presentation/views/webview/webview_view.dart';
 import 'app_routes.dart';
 import 'middlewares/auth_guard.dart';
 
@@ -100,6 +103,12 @@ class AppPages {
       middlewares: <GetMiddleware>[AuthGuard()],
     ),
     GetPage<dynamic>(
+      name: AppRoutes.addressSearch,
+      page: AddressSearchView.new,
+      binding: AddressSearchBinding(),
+      middlewares: <GetMiddleware>[AuthGuard()],
+    ),
+    GetPage<dynamic>(
       name: AppRoutes.payment,
       page: PaymentView.new,
       binding: PaymentBinding(),
@@ -144,6 +153,13 @@ class AppPages {
       name: AppRoutes.offer,
       page: OfferView.new,
       binding: OfferBinding(),
+    ),
+    GetPage<dynamic>(
+      name: AppRoutes.webView,
+      page: () => WebViewView(
+        url: Get.parameters['url'] ?? '',
+        title: Get.parameters['title'] ?? 'Веб-страница',
+      ),
     ),
   ];
 }

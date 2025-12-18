@@ -91,7 +91,7 @@ class _OrderInfoCard extends StatelessWidget {
           const SizedBox(height: _itemSpacing),
           _InfoRow(
             icon: Icons.payments,
-            label: 'Итого',
+            label: 'К оплате',
             value: totalPriceText,
             isTotal: true,
           ),

@@ -248,6 +248,7 @@ class _AdditionalServiceItem extends StatelessWidget {
               style: AppTypography.createBody16(AppColors.grayDark),
             ),
           ),
+          const SizedBox(width: 15),
           if (isToggle) ...<Widget>[
             Obx(
               () => Transform.scale(

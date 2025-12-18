@@ -46,9 +46,10 @@ class AddressPickerView extends GetView<AddressPickerController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Align(
-              alignment: Alignment.topLeft,
-              child: DecoratedBox(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   shape: BoxShape.circle,
@@ -65,6 +66,24 @@ class AddressPickerView extends GetView<AddressPickerController> {
                   icon: const Icon(Icons.close, color: AppColors.grayDark),
                 ),
               ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: AppColors.grayDark.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    onPressed: controller.executeSearch,
+                    icon: const Icon(Icons.search, color: AppColors.grayDark),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             Obx(

@@ -127,12 +127,15 @@ Future<void> _showTimeSheet(BuildContext context, {int? additionalIndex}) async 
       Get.find<OrderScheduleController>();
   await showModalBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     backgroundColor: AppColors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (_) {
-      return SafeArea(
+      return FractionallySizedBox(
+        heightFactor: 0.9,
+        child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
           child: Column(
@@ -144,8 +147,10 @@ Future<void> _showTimeSheet(BuildContext context, {int? additionalIndex}) async 
                 style: AppTypography.createTitle20(AppColors.grayDark),
               ),
               const SizedBox(height: 16),
-              Obx(
-                () => Wrap(
+                Expanded(
+                  child: Obx(
+                    () => SingleChildScrollView(
+                      child: Wrap(
                   spacing: 12,
                   runSpacing: 12,
                   children: controller.timeSlots.map((String slot) {
@@ -191,16 +196,21 @@ Future<void> _showTimeSheet(BuildContext context, {int? additionalIndex}) async 
                         child: Text(
                           slot,
                           style: AppTypography.createBody16(
-                            isSelected ? AppColors.white : AppColors.grayDark,
+                                  isSelected
+                                      ? AppColors.white
+                                      : AppColors.grayDark,
                           ),
                         ),
                       ),
                     );
                   }).toList(),
+                      ),
+                    ),
                 ),
               ),
               const SizedBox(height: 24),
             ],
+            ),
           ),
         ),
       );

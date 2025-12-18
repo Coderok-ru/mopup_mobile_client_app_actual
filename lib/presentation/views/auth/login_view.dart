@@ -20,23 +20,27 @@ class LoginView extends GetView<AuthController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
         child: Column(
           children: <Widget>[
-            Expanded(
+                    SizedBox(
+                      height: constraints.maxHeight * 0.5,
               child: Center(
                 child: SvgPicture.asset(AppAssets.logo, width: 282),
               ),
             ),
-            Expanded(
-              child: Padding(
+                    Padding(
                 padding: const EdgeInsets.fromLTRB(48, 0, 48, 48),
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Wrap(
                             alignment: WrapAlignment.center,
@@ -81,9 +85,7 @@ class LoginView extends GetView<AuthController> {
                             hint: AppStrings.passwordHint,
                             obscureText: true,
                           ),
-                        ],
-                      ),
-                    ),
+                          const SizedBox(height: 28),
                     Obx(() {
                       final bool isDisabled = controller.isBusy.value;
                       return SizedBox(
@@ -98,7 +100,9 @@ class LoginView extends GetView<AuthController> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.grayDark,
                             foregroundColor: AppColors.background,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -123,9 +127,12 @@ class LoginView extends GetView<AuthController> {
                     }),
                   ],
                 ),
+                    ),
+                  ],
               ),
             ),
-          ],
+            );
+          },
         ),
       ),
     );

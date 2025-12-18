@@ -26,52 +26,68 @@ class MainView extends GetView<MainController> {
       endDrawer: const MainMenuDrawer(),
       endDrawerEnableOpenDragGesture: true,
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            const Expanded(child: _LogoCard()),
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  Obx(() {
-                    if (controller.isLoading.value) {
-                      return const _LoadingIndicator();
-                    }
-                    final String? error = controller.errorMessage.value;
-                    if (error != null && error.isNotEmpty) {
-                      return _StateMessage(message: error);
-                    }
-                    final List<OrderTemplateSummaryEntity> templates =
-                        controller.templates;
-                    if (templates.isEmpty) {
-                      return const _StateMessage(
-                        message: 'Шаблоны услуг отсутствуют.',
-                      );
-                    }
-                    return ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(18, 32, 18, 120),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: templates.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final OrderTemplateSummaryEntity template =
-                            templates[index];
-                        final bool isLast = index == templates.length - 1;
-                        final String iconPath = _resolveIconPath(index);
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: isLast ? 0 : 28),
-                          child: _TemplateCard(
-                            template: template,
-                            iconPath: iconPath,
-                            onTap: () => controller.openTemplate(template),
-                          ),
-                        );
-                      },
-                    );
-                  }),
-                  const _InfoButton(),
-                ],
-              ),
-            ),
-          ],
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return Column(
+              children: <Widget>[
+                Flexible(
+                  flex: 4,
+                  child: _LogoCard(),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Obx(() {
+                          if (controller.isLoading.value) {
+                            return const _LoadingIndicator();
+                          }
+                          final String? error = controller.errorMessage.value;
+                          if (error != null && error.isNotEmpty) {
+                            return _StateMessage(message: error);
+                          }
+                          final List<OrderTemplateSummaryEntity> templates =
+                              controller.templates;
+                          if (templates.isEmpty) {
+                            return const _StateMessage(
+                              message: 'Шаблоны услуг отсутствуют.',
+                            );
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 32, 18, 0),
+                            child: ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: templates.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final OrderTemplateSummaryEntity template =
+                                    templates[index];
+                                final bool isLast = index == templates.length - 1;
+                                final String iconPath = _resolveIconPath(index);
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: isLast ? 0 : 28,
+                                  ),
+                                  child: _TemplateCard(
+                                    template: template,
+                                    iconPath: iconPath,
+                                    onTap: () =>
+                                        controller.openTemplate(template),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 12),
+                      const _InfoButton(),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -85,7 +101,9 @@ class _LogoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 54),
-      child: Center(child: SvgPicture.asset(AppAssets.logo, width: 260)),
+      child: Center(
+        child: SvgPicture.asset(AppAssets.logo, width: 260),
+      ),
     );
   }
 }
@@ -165,33 +183,25 @@ class _InfoButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: SizedBox(
-            width: 72,
-            height: 72,
-            child: IconButton(
-              onPressed: () {
-                HapticUtils.executeSelectionClick();
-                Get.toNamed(AppRoutes.info);
-              },
-              icon: SvgPicture.asset(
-                AppAssets.iconInfoSquare,
-                width: 32,
-                height: 32,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.grayLight,
-                  BlendMode.srcIn,
-                ),
-              ),
-              splashRadius: 36,
-              color: AppColors.grayLight,
-            ),
+    return SizedBox(
+      width: 72,
+      height: 72,
+      child: IconButton(
+        onPressed: () {
+          HapticUtils.executeSelectionClick();
+          Get.toNamed(AppRoutes.info);
+        },
+        icon: SvgPicture.asset(
+          AppAssets.iconInfoSquare,
+          width: 32,
+          height: 32,
+          colorFilter: const ColorFilter.mode(
+            AppColors.grayLight,
+            BlendMode.srcIn,
           ),
         ),
+        splashRadius: 36,
+        color: AppColors.grayLight,
       ),
     );
   }

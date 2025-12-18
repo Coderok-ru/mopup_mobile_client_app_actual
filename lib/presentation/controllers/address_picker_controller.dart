@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 import '../../core/constants/map_constants.dart';
+import '../../routes/app_routes.dart';
 import '../../data/models/address/address_selection_model.dart';
 import '../../data/repositories/address/address_repository.dart';
 import '../../data/services/location/location_service.dart';
@@ -133,6 +134,76 @@ class AddressPickerController extends GetxController {
 
   /// Уменьшает масштаб карты.
   Future<void> executeZoomOut() => _changeZoom(delta: -1.0);
+
+  /// Обрабатывает нажатие на кнопку поиска.
+  Future<void> executeSearch() async {
+    final dynamic result = await Get.toNamed(
+      AppRoutes.addressSearch,
+    );
+    debugPrint('[AddressPickerController] Получен результат из поиска: $result');
+    if (result is String && result.isNotEmpty) {
+      debugPrint('[AddressPickerController] Адрес для геокодирования: "$result"');
+      final Point? point = await _geocodeAddress(result);
+      if (point != null) {
+        debugPrint('[AddressPickerController] Перемещение камеры на точку: $point');
+        cameraTarget.value = point;
+        await _moveCamera(point, MapConstants.defaultZoom);
+        final AddressSelectionModel selection = AddressSelectionModel(
+          formattedAddress: result,
+          latitude: point.latitude,
+          longitude: point.longitude,
+        );
+        _selection = selection;
+        address.value = result;
+        debugPrint('[AddressPickerController] Адрес сохранен: "$result"');
+      } else {
+        debugPrint('[AddressPickerController] Не удалось найти координаты для "$result"');
+        Get.snackbar(
+          'Ошибка',
+          'Не удалось найти координаты для выбранного адреса.',
+        );
+      }
+    } else {
+      debugPrint('[AddressPickerController] Результат пустой или не является строкой');
+    }
+  }
+
+  /// Преобразует адрес в координаты.
+  Future<Point?> _geocodeAddress(String address) async {
+    try {
+      debugPrint('[AddressPickerController] Геокодирование адреса: "$address"');
+      final (
+        SearchSession session,
+        Future<SearchSessionResult> resultFuture,
+      ) = await YandexSearch.searchByText(
+        searchText: address,
+        geometry: Geometry.fromPoint(
+          const Point(latitude: 0, longitude: 0),
+        ),
+        searchOptions: const SearchOptions(
+          searchType: SearchType.geo,
+          geometry: true,
+        ),
+      );
+      final SearchSessionResult result = await resultFuture;
+      await session.close();
+      if (result.items == null || result.items!.isEmpty) {
+        debugPrint('[AddressPickerController] Нет результатов для "$address"');
+        return null;
+      }
+      final SearchItem item = result.items!.first;
+      final Point? point = item.geometry.firstOrNull?.point;
+      if (point != null) {
+        debugPrint('[AddressPickerController] Найдены координаты для "$address": $point');
+      } else {
+        debugPrint('[AddressPickerController] Координаты не найдены в geometry для "$address"');
+      }
+      return point;
+    } catch (e) {
+      debugPrint('[AddressPickerController] Ошибка геокодинга: $e');
+      return null;
+    }
+  }
 
   Future<void> _fetchAddress(Point target, int zoom) async {
     await _resolveAddressAt(target: target, zoom: zoom);

@@ -96,7 +96,8 @@ class NotificationService {
   /// Настраивает Firebase Cloud Messaging.
   Future<void> _executeSetupFirebaseMessaging() async {
     print('🔧 Настройка Firebase Messaging...');
-    await _executeGetFCMToken();
+    // Не получаем токен здесь, так как это должно происходить после запроса разрешений
+    // Токен будет получен через executeGetFCMToken() после запроса разрешений
     _executeSetupMessageHandlers();
     firebaseMessaging.onTokenRefresh.listen((String newToken) {
       fcmToken = newToken;

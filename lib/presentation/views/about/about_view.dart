@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/haptic_utils.dart';
+import '../../views/webview/webview_view.dart';
 import '../../widgets/common/main_menu_drawer.dart';
 import '../../widgets/common/primary_app_bar.dart';
 
@@ -47,6 +50,8 @@ class AboutView extends StatelessWidget {
               const _VersionInfo(),
               const SizedBox(height: 32),
               _buildContactsCard(),
+              const SizedBox(height: 54),
+              _buildLegalLinks(),
             ],
           ),
         ),
@@ -90,6 +95,87 @@ class AboutView extends StatelessWidget {
             style: AppTypography.createBody13(AppColors.white),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLegalLinks() {
+    final List<Map<String, String>> legalLinks = <Map<String, String>>[
+      <String, String>{
+        'title': 'ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ',
+        'url': 'https://mopup.ru/police',
+      },
+      <String, String>{
+        'title': 'СТАНДАРТЫ КАЧЕСТВА',
+        'url': 'https://mopup.ru/standart',
+      },
+      <String, String>{
+        'title': 'ДОГОВОР ВОЗМЕЗДНОГО ОКАЗАНИЯ УСЛУГ (ОФЕРТА ЗАКАЗЧИКА)',
+        'url': 'https://mopup.ru/agreement',
+      },
+      <String, String>{
+        'title': 'СОГЛАСИЕ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ',
+        'url': 'https://mopup.ru/person',
+      },
+      <String, String>{
+        'title': 'УСЛОВИЯ ИСПОЛЬЗОВАНИЯ СЕРВИСА',
+        'url': 'https://mopup.ru/service-offer',
+      },
+      <String, String>{
+        'title': 'ОФЕРТА БЕЗОПАСНАЯ СДЕЛКА',
+        'url': 'https://mopup.ru/offer',
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Юридическая информация',
+          style: AppTypography.createTitle20(AppColors.grayDark),
+        ),
+        const SizedBox(height: 22),
+        ...legalLinks.map(
+          (Map<String, String> link) => _buildLegalLinkItem(
+            title: link['title']!,
+            url: link['url']!,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegalLinkItem({
+    required String title,
+    required String url,
+  }) {
+    return InkWell(
+      onTap: () {
+        HapticUtils.executeSelectionClick();
+        Get.to<dynamic>(
+          () => WebViewView(
+            url: url,
+            title: title,
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                title,
+                style: AppTypography.createBody13(AppColors.grayDark),
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+              color: AppColors.grayMedium,
+            ),
+          ],
+        ),
       ),
     );
   }

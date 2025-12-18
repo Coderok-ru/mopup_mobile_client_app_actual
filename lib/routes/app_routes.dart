@@ -51,9 +51,15 @@ class AppRoutes {
   /// Экран выбора адреса.
   static const String addressPicker = '/address-picker';
 
+  /// Экран поиска адреса.
+  static const String addressSearch = '/address-search';
+
   /// Экран подтверждения заказа.
   static const String orderConfirmation = '/order-confirmation';
 
   /// Экран деталей заказа.
   static const String orderDetails = '/order-details';
+
+  /// Экран WebView для отображения веб-страниц.
+  static const String webView = '/webview';
 }
