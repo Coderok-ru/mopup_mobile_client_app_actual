@@ -57,4 +57,7 @@ class AppUrls {
 
   /// Путь отправки данных устройства для push-уведомлений.
   static const String playerId = '/api/client/player-id';
+
+  /// Путь получения основного чек-листа.
+  static const String checklistsMain = '/api/checklists/main';
 }

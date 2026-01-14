@@ -1,24 +1,26 @@
 import 'package:get/get.dart';
 
-import '../../data/models/settings/mobile_settings_entity.dart';
+import '../../data/models/checklist/checklist_entity.dart';
+import '../../data/repositories/checklist/checklist_repository.dart';
 import '../../data/repositories/settings/mobile_settings_repository.dart';
 
 /// Контроллер экрана информации об услугах.
 class InfoController extends GetxController {
   /// Репозиторий мобильных настроек.
   final MobileSettingsRepository mobileSettingsRepository;
-
+  /// Репозиторий чек-листа.
+  final ChecklistRepository checklistRepository;
   /// Признак загрузки данных.
   final RxBool isBusy = false.obs;
-
   /// Сообщение об ошибке.
   final RxnString errorMessage = RxnString();
-
-  /// Мобильные настройки приложения.
-  final Rxn<MobileSettingsEntity> settings = Rxn<MobileSettingsEntity>();
-
+  /// Чек-лист.
+  final Rxn<ChecklistEntity> checklist = Rxn<ChecklistEntity>();
   /// Создает контроллер.
-  InfoController({required this.mobileSettingsRepository});
+  InfoController({
+    required this.mobileSettingsRepository,
+    required this.checklistRepository,
+  });
 
   @override
   void onInit() {
@@ -34,24 +36,14 @@ class InfoController extends GetxController {
     isBusy.value = true;
     errorMessage.value = null;
     try {
-      final MobileSettingsEntity entity =
-          await mobileSettingsRepository.loadMobileSettings();
-      settings.value = entity;
+      final ChecklistEntity entity = await checklistRepository.loadMainChecklist();
+      checklist.value = entity;
     } catch (_) {
       errorMessage.value =
           'Не удалось загрузить информацию. Пожалуйста, попробуйте ещё раз.';
     } finally {
       isBusy.value = false;
     }
-  }
-
-  /// Возвращает сырой HTML текста info.
-  String getInfoHtml() {
-    final MobileSettingsEntity? entity = settings.value;
-    if (entity == null || entity.info.isEmpty) {
-      return '';
-    }
-    return entity.info;
   }
 }
 

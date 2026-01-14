@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../controllers/info_controller.dart';
+import '../../widgets/checklist/checklist_table_widget.dart';
 import '../../widgets/common/primary_app_bar.dart';
 
 /// Экран с описанием типов уборки.
@@ -20,58 +20,20 @@ class InfoView extends GetView<InfoController> {
       appBar: const PrimaryAppBar(title: AppStrings.infoTitle, canPop: true),
       body: SafeArea(
         child: Obx(() {
-          if (controller.isBusy.value && controller.settings.value == null) {
+          if (controller.isBusy.value && controller.checklist.value == null) {
             return const Center(child: CircularProgressIndicator());
           }
           if (controller.errorMessage.value != null &&
-              controller.settings.value == null) {
+              controller.checklist.value == null) {
             return _InfoErrorState(onRetry: controller.loadInfo);
           }
-          final String infoHtml = controller.getInfoHtml();
-          if (infoHtml.isEmpty) {
+          final checklist = controller.checklist.value;
+          if (checklist == null) {
             return const SizedBox.shrink();
           }
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ListView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 36),
-                children: <Widget>[
-                  Html(
-                    data: infoHtml,
-                    style: <String, Style>{
-                      'body': Style(
-                        margin: Margins.all(0),
-                        padding: HtmlPaddings.zero,
-                        color: AppColors.grayMedium,
-                        fontSize: FontSize(
-                          AppTypography.createBody16(AppColors.grayMedium)
-                                  .fontSize ??
-                              14,
-                        ),
-                        fontWeight:
-                            AppTypography.createBody16(AppColors.grayMedium)
-                                .fontWeight,
-                        fontFamily:
-                            AppTypography.createBody16(AppColors.grayMedium)
-                                .fontFamily,
-                        lineHeight: LineHeight(
-                          AppTypography.createBody16(AppColors.grayMedium)
-                                  .height ??
-                              1.2,
-                        ),
-                      ),
-                      'p': Style(margin: Margins.only(bottom: 8)),
-                    },
-                  ),
-                ],
-              ),
-            ),
+            child: ChecklistTableWidget(checklist: checklist),
           );
         }),
       ),
